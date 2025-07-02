@@ -34,32 +34,8 @@ class PredictionService:
 
     @staticmethod
     def all_districts() -> DataResponse:
-        if df.empty:
-            return _zero_response()
-        hist, pred = _subset_pairs(df)
-        cur_year = get_current_year()
-        cur_rows = hist[hist["SCHOOL_YEAR"] == cur_year]
-        if cur_rows.empty:
-            return _zero_response()
-        present_tot  = cur_rows[PRESENT_COL].astype(float).sum()
-        enrolled_tot = cur_rows[ENROLLED_COL].astype(float).sum()
-        prev_att = round((present_tot / enrolled_tot) * 100, 1) if enrolled_tot > 0 else 0
-        total_days = round(enrolled_tot / len(cur_rows), 1)
-        preds = pred[PRED_DIST_COL].dropna()
-        pred_att = round(preds.mean() * 100, 1) if not preds.empty else 0
-        metrics = _aggregate_metrics(hist)
-        trends  = _aggregate_trends(hist, preds.mean() if not preds.empty else None)
-        return DataResponse(
-            previousAttendance = prev_att,
-            predictedAttendance = pred_att,
-            predictedValues = AttendanceValues(
-                year=str(get_predicted_year()),
-                predictedAttendance=pred_att,
-                totalDays=total_days,
-            ),
-            metrics=metrics,
-            trends=trends,
-        )
+        from backend.app.services.predictions import get_all_districts_summary
+        return get_all_districts_summary()
 
     @staticmethod
     def district(req: DataRequest) -> DataResponse:

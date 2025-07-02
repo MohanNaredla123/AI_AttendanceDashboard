@@ -1,5 +1,5 @@
 [project]
-name = "aip-alerts-and-predictions"
+name = "ai_attendancedashboard"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"

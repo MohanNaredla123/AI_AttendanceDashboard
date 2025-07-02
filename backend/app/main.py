@@ -17,7 +17,25 @@ from backend.classes.DownloadReportCriteria import DownloadReportCriteria
 app = FastAPI(
     default_response_class=ORJSONResponse,
 )
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"])
+origins = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:8080/alerts",
+    "http://127.0.0.1:8080/alerts",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://localhost:8081/alerts",
+    "http://127.0.0.1:8081/alerts"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,                       
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH",
+                   "DELETE", "OPTIONS"],         
+    allow_headers=["Content-Type", "Authorization"]
+)
 
 
 @app.on_event("startup")
@@ -36,7 +54,7 @@ def ready():
 
 
 
-@app.post("/api/alerts/prediction-insights/", response_model=InsightService.prediction_insights.__annotations__["return"])
+@app.post("/api/alerts/prediction-insights", response_model=InsightService.prediction_insights.__annotations__["return"])
 def prediction_insights(criteria: AnalysisSearchCriteria):
     ready()
     return InsightService.prediction_insights(criteria)

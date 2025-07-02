@@ -1,5 +1,5 @@
-import { from, Observable } from 'rxjs';
-import axiosInstance from "@/lib/axios";
+import { from, Observable } from "rxjs";
+import axiosInstance from "../lib/axios";
 
 interface FilterOptions {
   // Define the structure of filter options
@@ -23,35 +23,41 @@ class AlertsService {
   // Get school districts for filtering
   getSchoolDistricts(): Observable<Array<{ id: string; name: string }>> {
     return from(
-      axiosInstance.get('/api/v1/school-districts')
-        .then(response => response.data)
+      axiosInstance
+        .get("/api/v1/school-districts")
+        .then((response) => response.data)
     );
   }
 
   // Get filter options for the dashboard
   getFilterOptions(): Observable<FilterOptions> {
     return from(
-      axiosInstance.get('/api/v1/filter-options')
-        .then(response => response.data)
+      axiosInstance
+        .get("/api/v1/filter-options")
+        .then((response) => response.data)
     );
   }
 
   // Get alerts based on filters
-  getAlerts(filters: Record<string, any>): Observable<{ data: AlertData[]; total: number }> {
+  getAlerts(
+    filters: Record<string, any>
+  ): Observable<{ data: AlertData[]; total: number }> {
     return from(
-      axiosInstance.get('/api/v1/alerts', { params: filters })
-        .then(response => response.data)
+      axiosInstance
+        .get("/api/v1/alerts", { params: filters })
+        .then((response) => response.data)
     );
   }
 
   // Download below 85% report
   downloadBelow85Report(filters: Record<string, any>): Observable<Blob> {
     return from(
-      axiosInstance.get('/api/v1/reports/below-85', {
-        params: filters,
-        responseType: 'blob'
-      })
-      .then(response => response.data)
+      axiosInstance
+        .get("/api/v1/reports/below-85", {
+          params: filters,
+          responseType: "blob",
+        })
+        .then((response) => response.data)
     );
   }
 }
