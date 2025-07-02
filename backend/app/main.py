@@ -66,28 +66,28 @@ def filter_options():
     return FilterService.filter_options()
 
 
-@app.get("/api/alerts/filters/districts")
+@app.get("/api/alerts/districts")
 def districts():
     ready()
     return FilterService.districts()
 
 
-@app.get("/api/alerts/filters/schools")
-def schools(district: str | None = None):
+@app.get("/api/alerts/schools/district/{districtCode}")
+def schools(districtCode: str | None = None):
     ready()
-    return FilterService.schools(district)
+    return FilterService.schools(districtCode)
 
 
-@app.get("/api/alerts/filters/grades")
-def grades(district: str | None = None, school: str | None = None):
+@app.get("/api/alerts/grades/district/{districtCode}/school/{schoolCode}")
+def grades(districtCode: str | None = None, schoolCode: str | None = None):
     ready()
-    return FilterService.grades(district, school)
+    return FilterService.grades(districtCode, schoolCode)
 
 
-@app.post("/api/alerts/download/report/{report_type}")
-def download_report(report_type: str, criteria: DownloadReportCriteria):
+@app.post("/api/alerts/download/report/{reportType}")
+def download_report(reportType: str, criteria: DownloadReportCriteria):
     ready()
-    pkg = ReportService.generate(report_type, criteria)
+    pkg = ReportService.generate(reportType, criteria)
     headers = {"Content-Disposition": f"attachment; filename={pkg.filename}"}
     return StreamingResponse(
         pkg.buffer,
