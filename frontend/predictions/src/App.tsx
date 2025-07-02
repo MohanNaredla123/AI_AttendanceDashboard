@@ -4,8 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AlertsAuthProvider } from "../../alerts/contexts/AuthContext";
 import Index from "./pages/Index";
-import AlertsDashboard from "./pages/AlertsDashboard";
+import AlertsDashboard from "../../alerts/pages/AlertsDashboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,9 +26,16 @@ const App = () => (
         <Router>
           <Routes>
             <Route path="/" element={<Index />} />
-            {/* <Route path="/alerts" element={<AlertsDashboard/>} />  */}
+            <Route
+              path="/alerts"
+              element={
+                <AlertsAuthProvider>
+                  <AlertsDashboard />
+                </AlertsAuthProvider>
+              }
+            />
           </Routes>
-        </ Router>
+        </Router>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

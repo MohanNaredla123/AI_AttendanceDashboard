@@ -1,11 +1,11 @@
-import axios from 'axios';
-const AUTH_TOKEN_KEY = 'auth_token';
+import axios from "axios";
+const AUTH_TOKEN_KEY = "auth_token";
 
 const axiosInstance = axios.create({
-  // baseURL: 'https://e8bc3736fe28.ngrok.app/AIP_API/api/',
-  baseURL: 'http://127.0.0.1:8000/api/FastApiService',
+  // baseURL: "http://127.0.0.1:8000/api/FastAPIService",
+  baseURL: "http://localhost:8000/api/predictions",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -37,10 +37,10 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       setAuthToken(null);
-      console.error('Unauthorized request');
+      console.error("Unauthorized request");
     }
     return Promise.reject(error);
   }
 );
 
-export default axiosInstance; 
+export default axiosInstance;
