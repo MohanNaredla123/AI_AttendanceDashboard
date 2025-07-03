@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse, StreamingResponse
+
 from backend.app.utils.loader import load_data
 from backend.app.utils.preprocessing import add_basic_rates
 from backend.app.data_store import data_store
@@ -13,6 +14,7 @@ from backend.app.services.prediction_service import PredictionService
 from backend.classes.AnalysisSearchCriteria import AnalysisSearchCriteria
 from backend.classes.DataRequest import DataRequest
 from backend.classes.DownloadReportCriteria import DownloadReportCriteria
+from backend.app.services import alerts
 
 app = FastAPI(
     default_response_class=ORJSONResponse,
@@ -40,6 +42,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 def bootstrap():
+    alerts.load_and_process_data()
     load_and_process_data()
     df_local = add_basic_rates(load_data())
     if df_local.empty:
@@ -57,43 +60,37 @@ def ready():
 @app.post("/api/alerts/prediction-insights", response_model=InsightService.prediction_insights.__annotations__["return"])
 def prediction_insights(criteria: AnalysisSearchCriteria):
     ready()
-    return InsightService.prediction_insights(criteria)
+    return alerts.get_analysis(criteria)
 
 
 @app.get("/api/alerts/filter-options", response_model=FilterService.filter_options.__annotations__["return"])
 def filter_options():
     ready()
-    return FilterService.filter_options()
+    return alerts.get_filter_options()
 
 
-@app.get("/api/alerts/districts")
+@app.get("/api/alerts/filters/districts")
 def districts():
     ready()
-    return FilterService.districts()
+    return alerts.get_districts()
 
 
-@app.get("/api/alerts/schools/district/{districtCode}")
-def schools(districtCode: str | None = None):
+@app.get("/api/alerts/filters/schools")
+def schools(district_code: str | None = None):
     ready()
-    return FilterService.schools(districtCode)
+    return alerts.get_schools(district_code)
 
 
-@app.get("/api/alerts/grades/district/{districtCode}/school/{schoolCode}")
-def grades(districtCode: str | None = None, schoolCode: str | None = None):
+@app.get("/api/alerts/filters/grades")
+def grades(district_code: str | None = None, school_code: str | None = None):
     ready()
-    return FilterService.grades(districtCode, schoolCode)
+    return alerts.get_grades(district_code, school_code)
 
 
-@app.post("/api/alerts/download/report/{reportType}")
-def download_report(reportType: str, criteria: DownloadReportCriteria):
+@app.post("/api/alerts/download/report/{report_type}")
+def download_report(report_type: str, criteria: DownloadReportCriteria):
     ready()
-    pkg = ReportService.generate(reportType, criteria)
-    headers = {"Content-Disposition": f"attachment; filename={pkg.filename}"}
-    return StreamingResponse(
-        pkg.buffer,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers=headers,
-    )
+    return alerts.download_report(criteria, report_type)
 
 
 @app.get("/api/predictions/students")

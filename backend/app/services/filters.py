@@ -19,6 +19,7 @@ def get_filter_options(df):
         df.groupby(["DISTRICT_CODE", "DISTRICT_NAME"])
         .size()
         .reset_index()
+        .drop_duplicates(subset=['DISTRICT_NAME'])
         .rename(columns={0: "cnt"})
     )
     schools = (
