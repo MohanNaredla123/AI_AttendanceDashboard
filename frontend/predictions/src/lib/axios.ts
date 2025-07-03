@@ -2,8 +2,8 @@ import axios from "axios";
 const AUTH_TOKEN_KEY = "auth_token";
 
 const axiosInstance = axios.create({
-  // baseURL: "http://127.0.0.1:8000/api/FastAPIService",
-  baseURL: "http://localhost:8000/api/predictions",
+  // baseURL: "http://127.0.0.1:9000/api/FastAPIService",
+  baseURL: "http://localhost:9000/api/predictions",
   headers: {
     "Content-Type": "application/json",
   },
